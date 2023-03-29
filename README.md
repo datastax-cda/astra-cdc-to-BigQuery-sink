@@ -11,6 +11,9 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
     - Region: `us-east1` in `GCP`
     - Keyspace Name: `sample`
     - Provider and Region: `Google Cloud > North America > us-east1`
+- Access to a GCP project with BQ admin and project viewer permissions
+	- And a GCP [Service Account](https://cloud.google.com/iam/docs/service-accounts-create) with BQ admin permissions - needed to authenticate using API keys
+	- Create a JSON [key](https://cloud.google.com/iam/docs/keys-create-delete) for the service account.
     
 ## Create streaming tenant
 
@@ -35,7 +38,7 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
     
     ![image](https://user-images.githubusercontent.com/41307386/225462035-ab3e95c4-7ed4-43a8-be82-98b9d65311ad.png)
     
-2. Create a table that will hold our test account information
+2. Create a table that will hold the test account information
 
     ```
     create table sample.all_accounts (id uuid primary key, full_name text, email text);
@@ -61,7 +64,11 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
   
     ![image](https://user-images.githubusercontent.com/41307386/225462888-4b3a5144-d686-4b52-915b-cb37a7535e73.png)
 
+
 ## Create BigQuery streaming sink
 
 As of this posting, the BigQuery streaming sink is in an "experimental" state, meaning it hasn't been fully tested or certified. Currently, creating the sink using the UI does not result in a functioning sink - so the sink needs to be created with the pulsar-admin CLI.
 
+Reference for utilizing the pulsar-admin CLI with Astra is found in this Astra Streaming Demo [repo](https://github.com/chrisjohnson16/astra-streaming-demo).  
+
+Reference for the Pulsar BigQuery sink connector, which is used by Astra, is available in this [repo](https://github.com/datastax/pulsar-3rdparty-connector/tree/master/pulsar-connectors/bigquery). 
