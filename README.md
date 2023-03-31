@@ -16,6 +16,7 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
 	- Create a JSON [key](https://cloud.google.com/iam/docs/keys-create-delete) for the service account.
 
 <br>
+
 ## Create streaming tenant
 
 1. Login to your [Astra account](https://astra.datastax.com/)
@@ -32,7 +33,9 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
     ![image](https://user-images.githubusercontent.com/41307386/225460342-0c6abcf9-f511-404b-a717-a6d488d45052.png)
 
     The new tenant will be ready very quickly and your view will automatically refresh to its “Quickstart” tab. CDC will automatically create a namespace and topic within the tenant.
-    
+
+<br>
+
 ## Create table and enable CDC
 
 1. Navigate to the sandbox database and click on the CQL Console tab. 
@@ -66,6 +69,7 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
     ![image](https://user-images.githubusercontent.com/41307386/225462888-4b3a5144-d686-4b52-915b-cb37a7535e73.png)
 
 <br>
+
 ## Create BigQuery streaming sink
 
 As of this posting, the BigQuery streaming sink is in an "experimental" state, meaning it hasn't been fully tested or certified. Currently, creating the sink using the UI does not result in a functioning sink - so the sink needs to be created with the pulsar-admin CLI.
