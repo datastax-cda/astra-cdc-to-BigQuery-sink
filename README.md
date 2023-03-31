@@ -14,7 +14,8 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
 - Access to a GCP project with BQ admin and project viewer permissions
 	- And a GCP [Service Account](https://cloud.google.com/iam/docs/service-accounts-create) with BQ admin permissions - needed to authenticate using API keys
 	- Create a JSON [key](https://cloud.google.com/iam/docs/keys-create-delete) for the service account.
-    
+
+<br>
 ## Create streaming tenant
 
 1. Login to your [Astra account](https://astra.datastax.com/)
@@ -64,7 +65,7 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
   
     ![image](https://user-images.githubusercontent.com/41307386/225462888-4b3a5144-d686-4b52-915b-cb37a7535e73.png)
 
-
+<br>
 ## Create BigQuery streaming sink
 
 As of this posting, the BigQuery streaming sink is in an "experimental" state, meaning it hasn't been fully tested or certified. Currently, creating the sink using the UI does not result in a functioning sink - so the sink needs to be created with the pulsar-admin CLI.
@@ -72,3 +73,54 @@ As of this posting, the BigQuery streaming sink is in an "experimental" state, m
 Reference for utilizing the pulsar-admin CLI with Astra is found in this Astra Streaming Demo [repo](https://github.com/chrisjohnson16/astra-streaming-demo).  
 
 Reference for the Pulsar BigQuery sink connector, which is used by Astra, is available in this [repo](https://github.com/datastax/pulsar-3rdparty-connector/tree/master/pulsar-connectors/bigquery). 
+
+1. Create a [dataset](https://cloud.google.com/bigquery/docs/quickstarts/load-data-console#create_a_dataset) in BigQuery named "persistent"
+	-  Note: as of this posting the BigQuery sink has a limitation that only supports a dataset named "persistent"
+2.  Creat the BigQuery sink using the pulsar-admin
+
+	```
+	pulsar-admin sinks create -t bigquery --processing-guarantees EFFECTIVELY_ONCE --inputs cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts --sink-config-file /tmp/bqconfig.yaml --tenant cdctest --namespace astracdc --name bq-sink-test
+	```
+
+	- Refer to sample bqconfig.yaml 
+		- Note: keyfile is redacted but is the JSON key downloaded for the GCP service account. All "\" in the key need to be escaped by adding an additional "\", i.e. `\\`
+	```
+	$ cat /tmp/bqconfig.yaml 
+	configs:
+	  lingerTimeMs: "10"
+	  topic: "cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts"
+	  sanitizeTopicName: "true"
+	  kafkaConnectorConfigProperties:
+		autoCreateTables: "true"
+		bufferSize: "10"
+		connector.class: "com.wepay.kafka.connect.bigquery.BigQuerySinkConnector"
+		defaultDataset: "kcp_astracdc_demo"
+		kafkaDataFieldName: "topicMetaData"
+		keySource: "JSON"
+			keyfile: "{\"type\": \"service_account\",\"project_id\": \"gcp-lcm-project\",\"private_key_id\": \"662926993f351aa0b7d013fe098929628b4c9ba9\",\"private_key\": \"-----BEGIN PRIVATE KEY-----\\n**redacted**\\n-----END PRIVATE KEY-----\\n\",\"client_email\": \"kcpbqtest@gcp-lcm-project.iam.gserviceaccount.com\",\"client_id\": \"*******\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/kcpbqtest%40gcp-lcm-project.iam.gserviceaccount.com\"}"
+		name: "bq-sink1"
+		project: "bq-test-380204"
+		queueSize: "100"
+		sanitizeFieldNames: "true"
+		sanitizeTopics: "false"
+		tasks.max: "1"
+		topics: "cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts"
+		kafkaKeyFieldName: "key"
+		topic2TableMap: "persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_0:all_accounts_partition_0,persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_1:all_accounts_partition_1,persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_2:all_accounts_partition_2"
+		allowNewBigQueryFields: "true"
+	  batchSize: "10"
+	  offsetStorageTopic: "cdctest/astracdc/bq-test-offset-01"
+	  kafkaConnectorSinkClass: "com.wepay.kafka.connect.bigquery.BigQuerySinkConnector"
+	```
+
+	- Config Properties of note:
+		- `sanitizeTopicName: "true"` - required value
+		- `defaultDataset:`  - specifies the dataset to use in BQ - should already exist
+		- `kafkaDataFieldName: "topicMetaData"` - required value
+		- `name:` - name of sink
+		- `project:` - BigQuery project
+		- `sanitizeFieldNames: "true"` - required value
+		- `sanitizeTopics: "false"` - required value
+		- `topics:` - CDC data topic from Astra Streaming for appropriate table(s)
+		- `kafkaKeyFieldName:` - use to sink the CDC table key field into BiqQuery
+		- `topic2TableMap:` - use to rename BQ tables instead of using topic name - one table per partition is created
