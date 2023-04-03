@@ -143,9 +143,22 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 	```
 
 4. Verify the sink exists and is running in the Astra Console. 
-	![image](https://user-images.githubusercontent.com/41307386/229541105-9107a23b-c907-4072-bd6e-cd8808a1880e.png)
+	- Navigate to the streaming tenant in the console and click on sinks
+	- Sink should initially show an "Initializing" status and then turn to a "Running" status
+	![image](https://user-images.githubusercontent.com/41307386/229632403-f7ae1857-66cd-4047-96bb-e1ee899abba3.png)
+	![image](https://user-images.githubusercontent.com/41307386/229632881-59d9a15c-5cbb-4e45-ab7a-7487c3bda78d.png)
+
 	- Troubleshooting tip: If the sink Errors instead of moving to a Running state - click into the sink from the console and view/download the log and look for errors to triage the issue. Correct the the config issue, delete the sink and recreate as needed.
 	![image](https://user-images.githubusercontent.com/41307386/229544861-b1fe9779-6591-478b-96e7-33663f7caca3.png)
 
 ### Test the CDC to BigQuery sink
-1. Insert a new record
+1. Insert a new record into the all_accounts table and verify it flows to BigQuery:
+    ```
+    insert into sample.all_accounts (id, full_name, email) values (uuid(), 'Champ Ship', 'champ.ship@acoolplace.com');
+    ```
+	
+2. Confirm in BigQuery that the table was created (if not already existing) and that the record was inserted.
+	![image](https://user-images.githubusercontent.com/41307386/229635134-4fd5a24a-3df5-4f64-b9f0-734ca5e9fff7.png)
+	- Note: 
+		- One BigQuery per partition is created. Per functionality as of this writing, this cannot be changed. 
+		- The table name can be controlled by mapping the full partition name to a table name of your choosing, using the `topic2TableMap:` config property. See the sample bqdemoconfig.yaml for an example. 
