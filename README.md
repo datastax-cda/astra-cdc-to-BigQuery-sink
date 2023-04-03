@@ -83,18 +83,18 @@ Reference for utilizing the pulsar-admin CLI with Astra is found in this Astra S
 
 Reference for the Pulsar BigQuery sink connector, which is used by Astra, is available in this [repo](https://github.com/datastax/pulsar-3rdparty-connector/tree/master/pulsar-connectors/bigquery). 
 
-1. Create a [dataset](https://cloud.google.com/bigquery/docs/quickstarts/load-data-console#create_a_dataset) in BigQuery with a name of your choosing (for this example the data set is named `astracdc_demo`) <br>
+1. Create a [dataset](https://cloud.google.com/bigquery/docs/quickstarts/load-data-console#create_a_dataset) in BigQuery with a name of your choosing (for this example the dataset is named `astracdc_demo`) <br>
 	![image](https://user-images.githubusercontent.com/41307386/229561017-27a8a689-ec90-45be-bd9b-8d6ba07c458f.png)
 
-2. Create a Topic in the `astracdc` namespace of the streaming tenant for the offset storage. 
+2. Create a Topic in the `astracdc` namespace of the streaming tenant for the offset storage: 
 	- From the Streaming tenant navigate to: "Namespace and Topics"
 	- Under the astracdc namespace click "Add Topic". 
 	  ![image](https://user-images.githubusercontent.com/41307386/229567041-76642e1d-a656-4610-bbea-0896c4469345.png)
-	- Give the topic a name and click "Add Topic. For this example, naming the topic bq-demo-offset-01
+	- Give the topic a name and click "Add Topic". For this example, naming the topic bq-demo-offset-01
 	  ![image](https://user-images.githubusercontent.com/41307386/229566495-54bc859b-e2a0-4fd5-8053-483ee713af49.png)
 3. Prepare the BigQuery sink config file 
 	- Refer to sample bqconfig.yaml 
-		- Note: keyfile is redacted but is the JSON key downloaded for the GCP service account. All "\" in the key need to be escaped by adding an additional "\", i.e. `\\`
+		- Note: the keyfile in the example is redacted but is the JSON key downloaded for the GCP service account. All quotes `"` and backslashes `\` in the json key file need to be escaped when adding to the config yaml using the `\` escape character, i.e. `\"` and  `\\`
 	```
 	$ cat /tmp/bqdemoconfig.yaml 
 	configs:
