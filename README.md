@@ -93,7 +93,7 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 	- Give the topic a name and click "Add Topic". For this example, naming the topic bq-demo-offset-01
 	  ![image](https://user-images.githubusercontent.com/41307386/229566495-54bc859b-e2a0-4fd5-8053-483ee713af49.png)
 3. Prepare the BigQuery sink config file 
-	- Refer to sample bqconfig.yaml 
+	- Refer to sample [bqdemoconfig.yaml](https://github.com/kaseycparker/astra-cdc-to-BigQuery-sink/blob/main/bqdemoconfig.yaml) 
 		- Note: the keyfile in the example is redacted but is the JSON key downloaded for the GCP service account. All quotes `"` and backslashes `\` in the json key file need to be escaped when adding to the config yaml using the `\` escape character, i.e. `\"` and  `\\`
 	```
 	$ cat /tmp/bqdemoconfig.yaml 
