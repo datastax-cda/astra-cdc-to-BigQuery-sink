@@ -90,9 +90,8 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 	- From the Streaming tenant navigate to: "Namespace and Topics"
 	- Under the astracdc namespace click "Add Topic". 
 	  ![image](https://user-images.githubusercontent.com/41307386/229567041-76642e1d-a656-4610-bbea-0896c4469345.png)
-	- Give the topic a name and click "Add Topic. For this demo, naming the topic bq-demo-offset-01
+	- Give the topic a name and click "Add Topic. For this example, naming the topic bq-demo-offset-01
 	  ![image](https://user-images.githubusercontent.com/41307386/229566495-54bc859b-e2a0-4fd5-8053-483ee713af49.png)
-	- In this example we've named the offset storage
 3. Prepare the BigQuery sink config file 
 	- Refer to sample bqconfig.yaml 
 		- Note: keyfile is redacted but is the JSON key downloaded for the GCP service account. All "\" in the key need to be escaped by adding an additional "\", i.e. `\\`
