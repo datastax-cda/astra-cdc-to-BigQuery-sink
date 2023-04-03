@@ -26,7 +26,7 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
 2. From the Astra home page, choose "Create a Streaming Tenant" from the Quick Access section and create a new tenant with the following details:
 
     Tenant Name: `cdctest`   
-    Provider and Region: `Google Cloud > uscentral1`
+    Provider and Region: `Google Cloud > useast1`
 
     ![image](https://user-images.githubusercontent.com/41307386/225459466-a4a310f3-9fd0-4bff-b455-265068f52c59.png)
     
@@ -68,6 +68,11 @@ This is a step by step guide to enable change data capture (CDC) on a table in A
   
     ![image](https://user-images.githubusercontent.com/41307386/225462888-4b3a5144-d686-4b52-915b-cb37a7535e73.png)
 
+6. Add a new record to the all_accounts table, to initialize the streaming objects:
+	```
+	insert into sample.all_accounts (id, full_name, email) values (85540e16-aca8-11ec-b909-0242ac120002, 'Joe Smith', 'joesmith@domain.com');
+	```
+
 <br>
 
 ## Create BigQuery streaming sink
@@ -78,53 +83,70 @@ Reference for utilizing the pulsar-admin CLI with Astra is found in this Astra S
 
 Reference for the Pulsar BigQuery sink connector, which is used by Astra, is available in this [repo](https://github.com/datastax/pulsar-3rdparty-connector/tree/master/pulsar-connectors/bigquery). 
 
-1. Create a [dataset](https://cloud.google.com/bigquery/docs/quickstarts/load-data-console#create_a_dataset) in BigQuery named "persistent"
-	-  Note: as of this posting the BigQuery sink has a limitation that only supports a dataset named "persistent"
-2.  Creat the BigQuery sink using the pulsar-admin
+1. Create a [dataset](https://cloud.google.com/bigquery/docs/quickstarts/load-data-console#create_a_dataset) in BigQuery with a name of your choosing (for this example the data set is named `astracdc_demo`) <br>
+	![image](https://user-images.githubusercontent.com/41307386/229561017-27a8a689-ec90-45be-bd9b-8d6ba07c458f.png)
 
-	```
-	pulsar-admin sinks create -t bigquery --processing-guarantees EFFECTIVELY_ONCE --inputs cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts --sink-config-file /tmp/bqconfig.yaml --tenant cdctest --namespace astracdc --name bq-sink-test
-	```
-
+2. Create a Topic in the `astracdc` namespace of the streaming tenant for the offset storage. 
+	- From the Streaming tenant navigate to: "Namespace and Topics"
+	- Under the astracdc namespace click "Add Topic". 
+	  ![image](https://user-images.githubusercontent.com/41307386/229567041-76642e1d-a656-4610-bbea-0896c4469345.png)
+	- Give the topic a name and click "Add Topic. For this demo, naming the topic bq-demo-offset-01
+	  ![image](https://user-images.githubusercontent.com/41307386/229566495-54bc859b-e2a0-4fd5-8053-483ee713af49.png)
+	- In this example we've named the offset storage
+3. Prepare the BigQuery sink config file 
 	- Refer to sample bqconfig.yaml 
 		- Note: keyfile is redacted but is the JSON key downloaded for the GCP service account. All "\" in the key need to be escaped by adding an additional "\", i.e. `\\`
 	```
-	$ cat /tmp/bqconfig.yaml 
+	$ cat /tmp/bqdemoconfig.yaml 
 	configs:
 	  lingerTimeMs: "10"
 	  topic: "cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts"
 	  sanitizeTopicName: "true"
 	  kafkaConnectorConfigProperties:
-		autoCreateTables: "true"
-		bufferSize: "10"
-		connector.class: "com.wepay.kafka.connect.bigquery.BigQuerySinkConnector"
-		defaultDataset: "kcp_astracdc_demo"
-		kafkaDataFieldName: "topicMetaData"
-		keySource: "JSON"
-			keyfile: "{\"type\": \"service_account\",\"project_id\": \"gcp-lcm-project\",\"private_key_id\": \"662926993f351aa0b7d013fe098929628b4c9ba9\",\"private_key\": \"-----BEGIN PRIVATE KEY-----\\n**redacted**\\n-----END PRIVATE KEY-----\\n\",\"client_email\": \"kcpbqtest@gcp-lcm-project.iam.gserviceaccount.com\",\"client_id\": \"*******\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/kcpbqtest%40gcp-lcm-project.iam.gserviceaccount.com\"}"
-		name: "bq-sink1"
-		project: "bq-test-380204"
-		queueSize: "100"
-		sanitizeFieldNames: "true"
-		sanitizeTopics: "false"
-		tasks.max: "1"
-		topics: "cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts"
-		kafkaKeyFieldName: "key"
-		topic2TableMap: "persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_0:all_accounts_partition_0,persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_1:all_accounts_partition_1,persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_2:all_accounts_partition_2"
-		allowNewBigQueryFields: "true"
+			autoCreateTables: "true"
+			bufferSize: "10"
+			connector.class: "com.wepay.kafka.connect.bigquery.BigQuerySinkConnector"
+			defaultDataset: "astracdc_demo"
+			kafkaDataFieldName: "topicMetaData"
+			keySource: "JSON"
+			keyfile: "{\"type\": \"service_account\",\"project_id\": \"bq-test-382615\",\"private_key_id\": \"**redacted**\",\"private_key\": \"-----BEGIN PRIVATE KEY-----\\n**redacted**\\n-----END PRIVATE KEY-----\\n\",\"client_email\": \"**redacted\",\"client_id\": \"**redacted**\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/redacted.iam.gserviceaccount.com\"}"
+			name: "bq-demo"
+			project: "bq-test-382615"
+			queueSize: "100"
+			sanitizeFieldNames: "true"
+			sanitizeTopics: "false"
+			tasks.max: "1"
+			topics: "cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts"
+			kafkaKeyFieldName: "key"
+			topic2TableMap: "persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_0:all_accounts_partition_0,persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_1:all_accounts_partition_1,persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_2:all_accounts_partition_2"
+			allowNewBigQueryFields: "true"
 	  batchSize: "10"
-	  offsetStorageTopic: "cdctest/astracdc/bq-test-offset-01"
+	  offsetStorageTopic: "cdctest/astracdc/bq-demo-offset-01"
 	  kafkaConnectorSinkClass: "com.wepay.kafka.connect.bigquery.BigQuerySinkConnector"
 	```
 
 	- Config Properties of note:
 		- `sanitizeTopicName: "true"` - required value
-		- `defaultDataset:`  - specifies the dataset to use in BQ - should already exist
+		- `defaultDataset:`  - specifies the dataset to use in BQ - must already exist
 		- `kafkaDataFieldName: "topicMetaData"` - required value
-		- `name:` - name of sink
-		- `project:` - BigQuery project
+		- `name:` - name of the sink
+		- `project:` - your GCP BigQuery project
 		- `sanitizeFieldNames: "true"` - required value
 		- `sanitizeTopics: "false"` - required value
 		- `topics:` - CDC data topic from Astra Streaming for appropriate table(s)
 		- `kafkaKeyFieldName:` - use to sink the CDC table key field into BiqQuery
 		- `topic2TableMap:` - use to rename BQ tables instead of using topic name - one table per partition is created
+		
+3. Create the BigQuery sink using the pulsar-admin
+
+	```
+	pulsar-admin sinks create -t bigquery --processing-guarantees EFFECTIVELY_ONCE --inputs cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts --sink-config-file /tmp/bqconfig.yaml --tenant cdctest --namespace astracdc --name bq-test2
+	```
+
+4. Verify the sink exists and is running in the Astra Console. 
+	![image](https://user-images.githubusercontent.com/41307386/229541105-9107a23b-c907-4072-bd6e-cd8808a1880e.png)
+	- Troubleshooting tip: If the sink Errors instead of moving to a Running state - click into the sink from the console and view/download the log and look for errors to triage the issue. Correct the the config issue, delete the sink and recreate as needed.
+	![image](https://user-images.githubusercontent.com/41307386/229544861-b1fe9779-6591-478b-96e7-33663f7caca3.png)
+
+### Test the CDC to BigQuery sink
+1. Insert a new record
