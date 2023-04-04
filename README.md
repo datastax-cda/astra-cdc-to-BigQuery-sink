@@ -1,5 +1,5 @@
 # astra-cdc-to-BigQuery-sink
-This is a step by step guide to enable change data capture (CDC) on a table in Astra DB and then create a BigQuery sink in Astra Streaming to feed data from the table into Google BigQuery. This provides the ability to send data changes made in Astra DB to BigQuery for downstream analytical use cases.
+This is a step by step guide to enable change data capture (CDC) on a table in Astra DB and then create a BigQuery sink in Astra Streaming to feed data from the table into Google BigQuery. This provides the ability to send data changes made in Astra DB to BigQuery, in near real-time, for downstream analytical use cases.
 
 ## Prerequisites
 
