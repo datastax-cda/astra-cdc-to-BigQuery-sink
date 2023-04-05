@@ -1,4 +1,4 @@
-# astra-cdc-to-BigQuery-sink
+# Astra-cdc-to-BigQuery-sink
 This is a step by step guide to enable change data capture (CDC) on a table in Astra DB and then create a BigQuery sink in Astra Streaming to feed data from the table into Google BigQuery. This provides the ability to send data changes made in Astra DB to BigQuery, in near real-time, for downstream analytical use cases.
 
 ## Prerequisites
@@ -93,7 +93,7 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 	- Give the topic a name and click "Add Topic". For this example, naming the topic bq-demo-offset-01
 	  ![image](https://user-images.githubusercontent.com/41307386/229566495-54bc859b-e2a0-4fd5-8053-483ee713af49.png)
 3. Prepare the BigQuery sink config file 
-	- Refer to sample [bqdemoconfig.yaml](https://github.com/kaseycparker/astra-cdc-to-BigQuery-sink/blob/main/bqdemoconfig.yaml) 
+	- Refer to sample [bqdemoconfig.yaml](./bqdemoconfig.yaml)
 		- Note: the keyfile in the example is redacted but is the JSON key downloaded for the GCP service account. All quotes `"` and backslashes `\` in the json key file need to be escaped when adding to the config yaml using the `\` escape character, i.e. `\"` and  `\\`
 	```
 	$ cat /tmp/bqdemoconfig.yaml 
@@ -161,4 +161,4 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 	![image](https://user-images.githubusercontent.com/41307386/229635134-4fd5a24a-3df5-4f64-b9f0-734ca5e9fff7.png)
 	- Note: 
 		- One BigQuery per partition is created. Per functionality as of this writing, this cannot be changed. 
-		- The table name can be controlled by mapping the full partition name to a table name of your choosing, using the `topic2TableMap:` config property. See the sample [bqdemoconfig.yaml](https://github.com/kaseycparker/astra-cdc-to-BigQuery-sink/blob/main/bqdemoconfig.yaml) for an example. 
+		- The table name can be controlled by mapping the full partition name to a table name of your choosing, using the `topic2TableMap:` config property. See the sample [bqdemoconfig.yaml](./bqdemoconfig.yaml) for an example.
