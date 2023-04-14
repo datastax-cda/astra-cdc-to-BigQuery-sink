@@ -100,7 +100,7 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 	```
 	$ cat /tmp/bqdemoconfig.yaml 
 	configs:
-	  lingerTimeMs: "10"
+	  lingerTimeMs: "1000"
 	  topic: "cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts"
 	  sanitizeTopicName: "true"
 	  kafkaConnectorConfigProperties:
@@ -121,7 +121,7 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 			kafkaKeyFieldName: "key"
 			topic2TableMap: "persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_0:all_accounts_partition_0,persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_1:all_accounts_partition_1,persistent___cdctest_astracdc_data_342690fc_0ec9_4025_8c4e_d0966f71ecd1_sample_all_accounts_partition_2:all_accounts_partition_2"
 			allowNewBigQueryFields: "true"
-	  batchSize: "10"
+	  batchSize: "1000"
 	  offsetStorageTopic: "cdctest/astracdc/bq-demo-offset-01"
 	  kafkaConnectorSinkClass: "com.wepay.kafka.connect.bigquery.BigQuerySinkConnector"
 	```
