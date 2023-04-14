@@ -134,7 +134,7 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 		- `sanitizeTopics: "false"` - required value
 		- `topics:` - CDC data topic from Astra Streaming for appropriate table(s)
 		- `kafkaKeyFieldName:` - use to sink the CDC table key field into BiqQuery
-		- `topic2TableMap:` - use to rename BQ tables instead of using topic name - one table per partition is created
+		- `topic2TableMap:` - use to rename BQ tables instead of using topic name - one table per partition is created - follow syntax in the sample config
 		
 3. Create the BigQuery sink using the pulsar-admin
 
