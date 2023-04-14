@@ -141,7 +141,7 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 5. Create the BigQuery sink using the pulsar-admin CLI - replace the topic name in `--inputs` with the topic name from step 2 above. 
 
 	```
-	pulsar-admin sinks create -t bigquery --processing-guarantees EFFECTIVELY_ONCE --inputs cdctest/astracdc/data-[DB ID]-sample.all_accounts --sink-config-file /tmp/bqdemoconfig.yaml --tenant cdctest --namespace astracdc --name bq-demo
+	pulsar-admin sinks create -t bigquery --processing-guarantees EFFECTIVELY_ONCE --inputs cdctest/astracdc/data-[DB ID]-sample.all_accounts --sink-config-file /tmp/bqdemoconfig.yaml --tenant cdctest --namespace astracdc --name bq-demo --timeout-ms 0
 	```
 
 6. Verify the sink exists and is running in the Astra Console. 
