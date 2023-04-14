@@ -129,7 +129,7 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 		- `defaultDataset:`  - specifies the dataset to use in BQ - must already exist
 		- `kafkaDataFieldName: "topicMetaData"` - required value
 		- `name:` - name of the sink
-		- `project:` - your GCP BigQuery project
+		- `project:` - your GCP BigQuery project id
 		- `sanitizeFieldNames: "true"` - required value
 		- `sanitizeTopics: "false"` - required value
 		- `topics:` - CDC data topic from Astra Streaming for appropriate table(s)
