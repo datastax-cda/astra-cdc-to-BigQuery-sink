@@ -88,11 +88,13 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 
 2. Create a Topic in the `astracdc` namespace of the streaming tenant for the offset storage: 
 	- From the Streaming tenant navigate to: "Namespace and Topics"
-	- Under the astracdc namespace click "Add Topic". 
+	- Under the `astracdc` namespace click "Add Topic". 
 	  ![image](https://user-images.githubusercontent.com/41307386/229567041-76642e1d-a656-4610-bbea-0896c4469345.png)
 	- Give the topic a name and click "Add Topic". For this example, naming the topic bq-demo-offset-01
 	  ![image](https://user-images.githubusercontent.com/41307386/229566495-54bc859b-e2a0-4fd5-8053-483ee713af49.png)
-3. Prepare the BigQuery sink config file 
+
+3. Under the `astracdc` namespace, copy the data topic name for the sample.all_accounts table (will be in the format `data-[DB ID]-sample.all_accounts`) for use later.  
+4. Create a BigQuery sink config file 
 	- Refer to sample [bqdemoconfig.yaml](./bqdemoconfig.yaml)
 		- Note: the keyfile in the example is redacted but is the JSON key downloaded for the GCP service account. All quotes `"` and backslashes `\` in the json key file need to be escaped when adding to the config yaml using the `\` escape character, i.e. `\"` and  `\\`
 	```
@@ -132,17 +134,17 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 		- `project:` - your GCP BigQuery project id
 		- `sanitizeFieldNames: "true"` - required value
 		- `sanitizeTopics: "false"` - required value
-		- `topics:` - CDC data topic from Astra Streaming for appropriate table(s)
+		- `topics:` - CDC data topic from Astra Streaming for appropriate table(s) (copied in step 3 above)
 		- `kafkaKeyFieldName:` - use to sink the CDC table key field into BiqQuery
 		- `topic2TableMap:` - use to rename BQ tables instead of using topic name - one table per partition is created - follow syntax in the sample config
 		
-3. Create the BigQuery sink using the pulsar-admin
+5. Create the BigQuery sink using the pulsar-admin CLI - replace the topic name in `--inputs` with the topic name from step 2 above. 
 
 	```
-	pulsar-admin sinks create -t bigquery --processing-guarantees EFFECTIVELY_ONCE --inputs cdctest/astracdc/data-342690fc-0ec9-4025-8c4e-d0966f71ecd1-sample.all_accounts --sink-config-file /tmp/bqdemoconfig.yaml --tenant cdctest --namespace astracdc --name bq-demo
+	pulsar-admin sinks create -t bigquery --processing-guarantees EFFECTIVELY_ONCE --inputs cdctest/astracdc/data-[DB ID]-sample.all_accounts --sink-config-file /tmp/bqdemoconfig.yaml --tenant cdctest --namespace astracdc --name bq-demo
 	```
 
-4. Verify the sink exists and is running in the Astra Console. 
+6. Verify the sink exists and is running in the Astra Console. 
 	- Navigate to the streaming tenant in the console and click on sinks
 	- Sink should initially show an "Initializing" status and then turn to a "Running" status
 	![image](https://user-images.githubusercontent.com/41307386/229632403-f7ae1857-66cd-4047-96bb-e1ee899abba3.png)
