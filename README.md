@@ -162,5 +162,5 @@ Reference for the Pulsar BigQuery sink connector, which is used by Astra, is ava
 2. Confirm in BigQuery that the table was created (if not already existing) and that the record was inserted.
 	![image](https://user-images.githubusercontent.com/41307386/229635134-4fd5a24a-3df5-4f64-b9f0-734ca5e9fff7.png)
 	- Note: 
-		- One BigQuery per partition is created. Per functionality as of this writing, this cannot be changed. 
+		- One BigQuery table per partition is created. Per functionality as of this writing, this cannot be changed. 
 		- The table name can be controlled by mapping the full partition name to a table name of your choosing, using the `topic2TableMap:` config property. See the sample [bqdemoconfig.yaml](./bqdemoconfig.yaml) for an example.
